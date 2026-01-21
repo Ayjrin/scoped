@@ -1,0 +1,402 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  
+  /* Colors - slightly enhanced contrast while staying calm */
+  --color-background: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-elevated: #1c2128;
+  --color-focus: #58a6ff;
+  --color-break: #56d364;
+  --color-text: #e6edf3;
+  --color-text-secondary: #9ba4ae;
+  --color-muted: #7d8590;
+  --color-muted-strong: #8b949e;
+  --color-border: #3d444d;
+  --color-xp: #58a6ff;
+  
+  /* Radius */
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 4px;
+  
+  /* Shadows */
+  --shadow-glow: 0 0 20px rgba(74, 158, 255, 0.2);
+  --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4);
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+body {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* Main window container */
+#root {
+  background: var(--color-background);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Custom Title Bar */
+.title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  padding: 0 8px 0 12px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  -webkit-app-region: drag;
+}
+
+.title-bar-drag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.title-bar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-bar-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.title-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+
+.title-bar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.title-bar-btn:hover {
+  background: var(--color-surface-elevated);
+  color: var(--color-text);
+}
+
+.title-bar-btn-close:hover {
+  background: #da3633;
+  color: white;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* Drag region for window */
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Quest item animations */
+@keyframes strikethrough {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes fadeSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--color-focus), 0 0 10px var(--color-focus);
+  }
+  50% {
+    box-shadow: 0 0 10px var(--color-focus), 0 0 20px var(--color-focus), 0 0 30px var(--color-focus);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Dragging styles - simple placeholder */
+.quest-item-dragging {
+  opacity: 0.5;
+  background: var(--color-surface) !important;
+}
+
+.quest-drop-placeholder {
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  opacity: 0.5;
+}
+
+/* Completion animation */
+.quest-completing {
+  position: relative;
+}
+
+.quest-completing::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  height: 1px;
+  background: var(--color-text);
+  animation: strikethrough 0.3s ease-out forwards;
+}
+
+.quest-completed-fade {
+  animation: fadeSlideOut 0.4s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+/* Completed subquest - stays visible but muted */
+.quest-completed-muted {
+  opacity: 0.4;
+}
+
+.quest-completed-muted .quest-title {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+/* XP Bar */
+.xp-bar-container {
+  position: relative;
+  height: 6px;
+  background: var(--color-surface-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-xp), #79c0ff);
+  border-radius: 3px;
+  transition: width var(--transition-smooth);
+  transform-origin: left;
+}
+
+.xp-bar-glow {
+  animation: glow 1.5s ease-in-out infinite;
+}
+
+/* Sparkle effect for level up */
+.xp-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  animation: sparkle 0.6s ease-out forwards;
+}
+
+/* Collapse transition */
+.collapse-transition {
+  transition: all var(--transition-smooth);
+  overflow: hidden;
+}
+
+.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.expanded {
+  max-height: 1000px;
+  opacity: 1;
+}
+
+/* Checkbox styles */
+.quest-checkbox {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quest-checkbox:hover {
+  border-color: var(--color-focus);
+  background: color-mix(in srgb, var(--color-focus) 10%, transparent);
+}
+
+.quest-checkbox.checked {
+  background: var(--color-focus);
+  border-color: var(--color-focus);
+}
+
+.quest-checkbox.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quest-checkbox svg {
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all var(--transition-fast);
+}
+
+.quest-checkbox.checked svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Inline edit input */
+.quest-inline-edit {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-focus);
+  color: var(--color-text);
+  font-size: inherit;
+  font-family: inherit;
+  padding: 2px 0;
+  outline: none;
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border-radius: var(--radius-sm);
+}
+
+.section-header:hover {
+  background: var(--color-surface);
+}
+
+.section-chevron {
+  transition: transform var(--transition-fast);
+}
+
+.section-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+/* Day group */
+.day-group {
+  margin-bottom: 6px;
+}
+
+.day-group-header {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  padding: 4px 8px;
+}
+
+/* Current Quest Section - distinct styling */
+.current-quest-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  margin: 0 8px 8px 8px;
+  padding: 12px;
+}
+
+.current-quest-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-focus);
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+/* Restore button on completed quests */
+.restore-btn {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.completed-quest-item:hover .restore-btn {
+  opacity: 1;
+}
